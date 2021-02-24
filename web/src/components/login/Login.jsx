@@ -29,7 +29,6 @@ function Login() {
                     loginStatus: true,
                     user: response.data.user
                 }))
-                history.push("/");
             }
             else {
                 history.push("/login");

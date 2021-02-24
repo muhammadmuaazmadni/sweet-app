@@ -136,6 +136,10 @@ router.post("/login", (req, res, next) => {
 })
 router.post("/logout", (req, res, next) => {
     res.clearCookie('jToken');
+    res.cookie('jToken', "", {
+        maxAge: 86400000,
+        httpOnly: true
+    });
     res.send("logout success");
 })
 

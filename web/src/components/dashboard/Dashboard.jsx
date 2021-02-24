@@ -4,10 +4,12 @@ import Basket from './cart/Basket';
 import data from './data';
 import Navbar from '../Navbar/Navbar'
 import axios from 'axios'
-import { useGlobalState, useGlobalStateUpdate } from '../../context/globalContext'
+import {useHistory} from "react-router-dom"
+import { useGlobalState,useGlobalStateUpdate} from '../../context/globalContext'
 function Dashboard() {
     const globalState = useGlobalState()
-    const setGlobalState = useGlobalStateUpdate()
+    const globalStateUpdate = useGlobalStateUpdate()
+    let history = useHistory()
     const { products } = data;
     const [cartItems, setCartItems] = useState([]);
     const onAdd = (product) => {
@@ -38,9 +40,15 @@ function Dashboard() {
         axios({
             method: 'post',
             url: 'http://localhost:5000/logout',
+            withCredentials: true
         }).then((response) => {
             console.log(response)
-            // location.href = "./login.html"
+            globalStateUpdate(prev =>({
+                ...prev,
+                loginStatus:false
+            }))
+            history.push("/login")
+            
         }, (error) => {
             console.log(error);
         });
