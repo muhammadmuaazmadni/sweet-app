@@ -22,7 +22,6 @@ function ForgetPw() {
     function nextStep2() {
         setNext2(prev => !prev)
         console.log(document.getElementById('otp').value)
-
     }
     function getEmail(e) {
         e.preventDefault()

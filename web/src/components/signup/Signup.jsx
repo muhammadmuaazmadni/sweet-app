@@ -7,7 +7,6 @@ import {
 function Signup() {
     let url = 'http://localhost:5000'
     let [change, setChange] = useState(true)
-    // let [userData, setUserData] = useState([])
     let [show, setShow] = useState()
 
     let history = useHistory()
@@ -28,9 +27,6 @@ function Signup() {
             password: password,
             phone: phone
         }
-        // setUserData(previousValue => {
-        //     return previousValue.concat([newData]);
-        // })
         axios({
             method: 'post',
             url: url + '/signup',
@@ -38,14 +34,12 @@ function Signup() {
             withCredentials: true
         }).then((response) => {
             if (response.data.status === 200) {
-                // history.push("/Dashboard");
                 setChange(false)
             }
             else {
                 history.push("/signup");
                 setShow(response.data.message)
             }
-            // console.log(response.data.message)
         }).catch((error) => {
             console.log(error);
         });

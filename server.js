@@ -3,7 +3,7 @@ var bodyParser = require('body-parser');
 var cookieParser = require('cookie-parser');
 var cors = require("cors");
 var morgan = require("morgan");
-var { foodUserModel, foodOtpModel, } = require('./dbconn/module')
+var { foodUserModel, foodOrderModel, } = require('./dbconn/module')
 var path = require("path")
 var SERVER_SECRET = process.env.SECRET || "1234";
 var jwt = require('jsonwebtoken')
@@ -82,7 +82,46 @@ app.get("/profile", (req, res, next) => {
         })
 })
 
+app.post("/order",(req,res,next)=>{
+    console.log("fsfsf",req.body)
+    if (!req.body.orders || !req.body.total) {
 
+        res.status(403).send(`
+            please send email and passwod in json body.
+            e.g:
+            {
+                "orders": "order",
+                "total": "12342",
+            }`)
+        return;
+    }
+
+    foodUserModel.findOne({email: req.body.jToken.email} ,(err,user)=>{
+        if (!err) {
+            foodOrderModel.create({
+                name: user.name,
+                email:user.email,
+                phone:user.phone,
+                address:user.address,
+                total: req.body.total,
+                orders:req.body.orders
+            }).then((data)=>{
+                res.send({
+                    status: 200,
+                    message: "Order have been submitted",
+                    data: data
+                })
+            }).catch(()=>{
+                res.status(500).send({
+                    message: "order submit error, " + err
+                })
+            })
+        }
+        else{
+            console.log(err)
+        }
+    })
+})
 
 
 

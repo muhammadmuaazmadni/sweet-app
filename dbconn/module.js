@@ -42,7 +42,19 @@ var foodResetPassword = new mongoose.Schema({
 });
 var foodOtpModel = mongoose.model("foodotp", foodResetPassword);
 
+var foodOrderSchema = new mongoose.Schema({
+    "name": String,
+    "email": String,
+    "phone": String,
+    "address": String,
+    "total": String,
+    "orders": Array,
+    "createdOn": { "type": Date, "default": Date.now },
+});
+var foodOrderModel = mongoose.model("orders", foodOrderSchema);
+
 module.exports = {
     foodUserModel: foodUserModel,
     foodOtpModel: foodOtpModel,
+    foodOrderModel: foodOrderModel
 }

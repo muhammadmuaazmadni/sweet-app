@@ -1,11 +1,34 @@
 import React from 'react';
 import '../Dashboard.css'
+import axios from 'axios'
 export default function Basket(props) {
   const { cartItems, onAdd, onRemove } = props;
   const itemsPrice = cartItems.reduce((a, c) => a + c.qty * c.price, 0);
   console.log(cartItems)
   console.log(itemsPrice)
   const totalPrice = itemsPrice;
+    
+  function placeOrder(){
+    axios({
+      method: 'post',
+      url: "http://localhost:5000/order",
+      data:{
+        total: totalPrice,
+        orders: cartItems
+      },
+      withCredentials: true
+    }).then((response)=>{
+      if (response.data.status === 200) {
+        console.log(response.data.message)
+        console.log(response.data.data)
+      }
+      else{
+        console.log(response.data.message)
+      }
+    }).catch((err)=>{
+      console.log(err)
+    }) 
+  }
   return (
     <aside className="container ">
       <div className="row justify-content-center">
@@ -43,7 +66,8 @@ export default function Basket(props) {
             </div>
             <hr />
             <div className="row1">
-              <button onClick={() => alert('Implement Checkout!')} className="btn btn-primary">
+              <button 
+               className="btn btn-primary" onClick={placeOrder}>
                 Checkout
               </button>
             </div>

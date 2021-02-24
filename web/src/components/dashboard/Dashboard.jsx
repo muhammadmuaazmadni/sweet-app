@@ -44,7 +44,6 @@ function Dashboard() {
         }, (error) => {
             console.log(error);
         });
-        return false
     }
     return (
         <div>

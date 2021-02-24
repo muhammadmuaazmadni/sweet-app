@@ -27,8 +27,9 @@ function Login() {
                 setGlobalState(prev =>({
                     ...prev,
                     loginStatus: true,
+                    user: response.data.user
                 }))
-                history.push("/Dashboard");
+                history.push("/");
             }
             else {
                 history.push("/login");

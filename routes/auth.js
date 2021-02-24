@@ -135,7 +135,7 @@ router.post("/login", (req, res, next) => {
         });
 })
 router.post("/logout", (req, res, next) => {
-    res.cookie('jToken', "");
+    res.clearCookie('jToken');
     res.send("logout success");
 })
 

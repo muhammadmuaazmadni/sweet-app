@@ -1,9 +1,8 @@
 import React from "react";
 import { Link } from 'react-router-dom'
-import { useGlobalState, useGlobalStateUpdate } from '../../context/globalContext'
+import { useGlobalState} from '../../context/globalContext'
 function Navbar(props) {
     const globalState = useGlobalState()
-    const setGlobalState = useGlobalStateUpdate()
     return (
         <div className='sticky-top'>
             <nav className="navbar  navbar-expand-lg navbar-light bg-light">
@@ -16,10 +15,10 @@ function Navbar(props) {
                         <>
                             <ul className="navbar-nav mr-auto">
                                 <li className="nav-item active">
-                                    <Link className="nav-link" to="/">Home <span className="sr-only">(current)</span></Link>
+                                    <Link className="nav-link" to="/home">Home <span className="sr-only">(current)</span></Link>
                                 </li>
                                 <li className="nav-item active">
-                                    <Link className="nav-link" to="/dashboard">Dashboard <span className="sr-only">(current)</span></Link>
+                                    <Link className="nav-link" to="/">Dashboard <span className="sr-only">(current)</span></Link>
                                 </li>
                             </ul>
                             <a className="text-success btn btn-outline-success" onClick={props.logout}>Logout<span className="sr-only">(current)</span></a>
