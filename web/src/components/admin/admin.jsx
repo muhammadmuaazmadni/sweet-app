@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import axios from "axios";
 import '../login/Login.css'
-import {useGlobalState,useGlobalStateUpdate} from '../../context/globalContext'
+import { useGlobalState, useGlobalStateUpdate } from '../../context/globalContext'
 import {
     useHistory
 } from "react-router-dom";
@@ -26,12 +26,13 @@ function Admin() {
             if (response.data.status === 200) {
                 console.log(response.data.message)
                 console.log(response.data.user)
-                setGlobalState(prev =>({
+                setGlobalState(prev => ({
                     ...prev,
                     loginStatus: true,
                     // user: response.data.user,
                     roll: "admin"
                 }))
+                localStorage.setItem('roll', 'admin');
             }
             else {
                 // history.push("/login");
@@ -48,7 +49,7 @@ function Admin() {
             <div className='container'>
                 <div className='row justify-content-center'>
                     <div className='col-md-5 form'>
-                        <h2 className="text-center">Admin Login</h2><br/>
+                        <h2 className="text-center">Admin Login</h2><br />
                         <form onSubmit={login}>
                             <div className="form-col">
                                 <div className="col">
@@ -61,10 +62,10 @@ function Admin() {
                                 </div><br />
                                 <div className="col">
                                     <button className='btn btn-primary' type="submit">Login</button>
-                                </div><br/>
-                                {show?<div className="alert alert-danger" role="alert">
+                                </div><br />
+                                {show ? <div className="alert alert-danger" role="alert">
                                     {show}
-                                </div>: null}
+                                </div> : null}
                             </div>
                         </form>
                     </div>

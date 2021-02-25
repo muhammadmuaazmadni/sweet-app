@@ -7,6 +7,8 @@ export const useGlobalState = () => useContext(GlobalStateContext)
 export const useGlobalStateUpdate = () => useContext(GlobalStateUpdateContext)
 
 export function GlobalStateProvider({ children }) {
+  var ourRoll = localStorage.getItem('roll');
+  console.log('local storage roll', ourRoll);
   const [data, setData] = useState({
     user: null,
     loginStatus: false,
@@ -14,62 +16,35 @@ export function GlobalStateProvider({ children }) {
     roll: null
   })
   console.log(data)
+
   useEffect(() => {
-    if (data.roll === "user") {
-      axios({
-        method: "get",
-        url: `http://localhost:5000/profile`,
-        withCredentials: true
+    console.log('inside global roll', data.roll);
+    axios({
+      method: "get",
+      url: ourRoll === 'user' ? `http://localhost:5000/profile` : 'http://localhost:5000/adminProfile',
+      withCredentials: true
+    })
+      .then((res) => {
+        console.log("context response", res);
+        if (res.data.status === 200) {
+          setData((prev) => ({
+            ...prev,
+            user: res.data.profile,
+            loginStatus: true,
+            roll: ourRoll === 'user' ? 'user' : 'admin'
+          }));
+        }
       })
-        .then((res) => {
-          console.log("context response", res);
-          if (res.data.status === 200) {
-            setData((prev) => ({
-              ...prev,
-              user: res.data.profile,
-              loginStatus: true,
-              roll: "user"
-            }));
-          }
-        })
-        .catch((err) => {
-          console.log(err);
-          if (err) {
-            setData((prev) => ({ ...prev, loginStatus: false }));
-          }
-        });
-      return () => {
-        console.log("cleanup");
-      };
-    }
-    else {
-      axios({
-        method: "get",
-        url: `http://localhost:5000/adminProfile`,
-        withCredentials: true
-      })
-        .then((res) => {
-          console.log("context response", res);
-          if (res.data.status === 200) {
-            setData((prev) => ({
-              ...prev,
-              user: res.data.profile,
-              loginStatus: true,
-              roll: "admin"
-            }));
-          }
-        })
-        .catch((err) => {
-          console.log(err);
-          if (err) {
-            setData((prev) => ({ ...prev, loginStatus: false }));
-          }
-        });
-      return () => {
-        console.log("cleanup");
-      };
-    }
-  }, []);
+      .catch((err) => {
+        console.log(err);
+        if (err) {
+          setData((prev) => ({ ...prev, loginStatus: false }));
+        }
+      });
+    return () => {
+      console.log("cleanup");
+    };
+  }, [data.roll]);
 
   return (
     <GlobalStateContext.Provider value={data}>

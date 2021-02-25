@@ -3,7 +3,7 @@ var bodyParser = require('body-parser');
 var cookieParser = require('cookie-parser');
 var cors = require("cors");
 var morgan = require("morgan");
-var { foodUserModel, foodOrderModel, } = require('./dbconn/module')
+var { foodUserModel, foodOrderModel, foodOrderModel } = require('./dbconn/module')
 var path = require("path")
 var SERVER_SECRET = process.env.SECRET || "1234";
 var jwt = require('jsonwebtoken')
@@ -48,6 +48,7 @@ app.use(function (req, res, next) {
                     id: decodedData.id,
                     name: decodedData.name,
                     email: decodedData.email,
+                    
                 }, SERVER_SECRET)
                 res.cookie('jToken', token, {
                     maxAge: 86400000,
@@ -145,11 +146,18 @@ app.post("/order",(req,res,next)=>{
     })
 })
 
-
-
-
-
-
+app.get('/getOrders',(req,res,next)=>{
+    foodOrderModel.find({},(err,data)=>{
+        if (!err) {
+            res.send({
+                data:data
+            })
+        }
+        else{
+            res.send(err)
+        }
+    })
+})
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {

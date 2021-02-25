@@ -1,5 +1,5 @@
 import React from "react";
-import { BrowserRouter as Router, Switch, Route, Redirect } from "react-router-dom";
+import { HashRouter as Router, Switch, Route, Redirect } from "react-router-dom";
 import Home from './../home/Home.jsx'
 import Login from './../login/Login.jsx'
 import Signup from './../signup/Signup.jsx'
@@ -14,6 +14,7 @@ function RoutesConfig() {
     return (
         <div>
             <Router>
+                {console.log('roll inside router=> ',globalState.roll)}
                 {globalState.loginStatus === false ?
                     <div>
                         <Switch>

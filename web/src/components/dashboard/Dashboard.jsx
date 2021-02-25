@@ -6,12 +6,15 @@ import Navbar from '../Navbar/Navbar'
 import axios from 'axios'
 import {useHistory} from "react-router-dom"
 import { useGlobalState,useGlobalStateUpdate} from '../../context/globalContext'
-function Dashboard() {
+
+function Dashboard() {    
     const globalState = useGlobalState()
     const globalStateUpdate = useGlobalStateUpdate()
     let history = useHistory()
     const { products } = data;
     const [cartItems, setCartItems] = useState([]);
+ 
+    ///////////////////////////////
     const onAdd = (product) => {
         const exist = cartItems.find((x) => x.id === product.id);
         if (exist) {
@@ -24,6 +27,8 @@ function Dashboard() {
             setCartItems([...cartItems, { ...product, qty: 1 }]);
         }
     };
+    ///////////////////////////////
+    ///////////////////////////////
     const onRemove = (product) => {
         const exist = cartItems.find((x) => x.id === product.id);
         if (exist.qty === 1) {
@@ -36,6 +41,8 @@ function Dashboard() {
             );
         }
     };
+    ///////////////////////////////
+
     function logout() {
         axios({
             method: 'post',
@@ -48,7 +55,6 @@ function Dashboard() {
                 loginStatus:false
             }))
             history.push("/login")
-            
         }, (error) => {
             console.log(error);
         });

@@ -28,8 +28,9 @@ function Login() {
                     ...prev,
                     loginStatus: true,
                     user: response.data.user,
-                    roll: "user"
+                    roll: 'user'
                 }))
+                localStorage.setItem('roll','user');
             }
             else {
                 history.push("/login");
