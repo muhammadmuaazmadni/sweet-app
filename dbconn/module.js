@@ -34,7 +34,13 @@ var foodUserSchema = new mongoose.Schema({
 });
 
 var foodUserModel = mongoose.model("fooduser", foodUserSchema);
-
+var admin = new mongoose.Schema({
+    "email": String,
+    "password": String,
+    "createdOn": { "type": Date, "default": Date.now },
+    "activeSince": Date
+});
+var adminPanel = mongoose.model("admin", admin);
 var foodResetPassword = new mongoose.Schema({
     "email": String,
     "otp": String,
@@ -56,5 +62,6 @@ var foodOrderModel = mongoose.model("orders", foodOrderSchema);
 module.exports = {
     foodUserModel: foodUserModel,
     foodOtpModel: foodOtpModel,
-    foodOrderModel: foodOrderModel
+    foodOrderModel: foodOrderModel,
+    adminPanel:adminPanel
 }

@@ -9,6 +9,7 @@ var SERVER_SECRET = process.env.SECRET || "1234";
 var jwt = require('jsonwebtoken')
 var app = express()
 var authRoutes = require('./routes/auth')
+var adminRoutes = require('./routes/adminRoutes')
 
 app.use(bodyParser.json());
 app.use(cookieParser());
@@ -26,6 +27,7 @@ app.get('/', (req, res, next) => {
 })
 
 app.use('/', authRoutes);
+app.use('/', adminRoutes);
 app.use(function (req, res, next) {
     console.log(req.cookies.jToken)
     if (!req.cookies.jToken) {
@@ -61,6 +63,26 @@ app.use(function (req, res, next) {
     });
 })
 
+app.get("/adminProfile", (req, res, next) => {
+
+    console.log(req.body)
+
+    foodUserModel.findById(req.body.jToken.id, 'name email createdOn',
+        function (err, doc) {
+            console.log( "doc",doc)
+            if (!err) {
+                res.send({
+                    status: 200,
+                    profile: doc
+                })
+
+            } else {
+                res.status(500).send({
+                    message: "server error"
+                })
+            }
+        })
+})
 app.get("/profile", (req, res, next) => {
 
     console.log(req.body)

@@ -58,7 +58,7 @@ function Dashboard() {
             <Navbar logout={logout}/>
             <div className='bg-primary py-2'>
                 <div className="container">
-                    <h2 className="mr-4 text-white">Welcome {globalState.user.name}</h2>
+                    <h2 className="mr-4 text-white">Welcome </h2>
                 </div>
             </div>
             <div className="row1">
