@@ -1,6 +1,6 @@
 import React from "react";
 import { Link } from 'react-router-dom'
-import { useGlobalState} from '../../context/globalContext'
+import { useGlobalState } from '../../context/globalContext'
 function Navbar(props) {
     const globalState = useGlobalState()
     return (
@@ -11,7 +11,7 @@ function Navbar(props) {
                     <span className="navbar-toggler-icon" />
                 </button>
                 <div className="collapse navbar-collapse" id="navbarSupportedContent" >
-                    {globalState.loginStatus === true ?
+                    {globalState.role === 'user' ?
                         <>
                             <ul className="navbar-nav mr-auto">
                                 <li className="nav-item active">
@@ -21,11 +21,27 @@ function Navbar(props) {
                                     <Link className="nav-link" to="/">Dashboard <span className="sr-only">(current)</span></Link>
                                 </li>
                             </ul>
-                            <a className="text-success btn btn-outline-success" onClick={props.logout}>Logout<span className="sr-only">(current)</span></a>
+                        </> :
+                        <>
+                            <ul className="navbar-nav mr-auto">
+                                <li className="nav-item active">
+                                    <Link className="nav-link" to="/">Admin Dashboard <span className="sr-only">(current)</span></Link>
+                                </li>
+                                <li className="nav-item active">
+                                    <Link className="nav-link" to="/addproducts">Add Products <span className="sr-only">(current)</span></Link>
+                                </li>
+                            </ul>
+                        </>
+                    }
+                    {globalState.loginStatus === true ?
+                        <>
+                            <a className="text-success btn btn-outline-success mr-3" onClick={props.logout}>Logout<span className="sr-only">(current)</span></a>
+                            <a className="btn btn-outline-success " onClick={() => props.setCart(pre => !pre)}><i class="fas fa-cart-plus mr-3" /><span>{props.cartItemsLength}</span><span className="sr-only">(current)</span></a>
                         </> :
                         <>
                             <Link className="btn btn-outline-success " to="/login">Login<span className="sr-only">(current)</span></Link>
                             <Link className="btn btn-outline-success ml-4" to="/signup">Signup <span className="sr-only">(current)</span></Link>
+                            <Link className="btn btn-outline-success " to="/login"><i class="fas fa-cart-plus"></i><span className="sr-only">(current)</span></Link>
                         </>
                     }
                 </div>

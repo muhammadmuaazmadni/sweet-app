@@ -3,13 +3,32 @@ var bodyParser = require('body-parser');
 var cookieParser = require('cookie-parser');
 var cors = require("cors");
 var morgan = require("morgan");
-var { foodUserModel, foodOrderModel, foodOrderModel } = require('./dbconn/module')
+var { foodUserModel, foodOrderModel, foodProductModel } = require('./dbconn/module')
 var path = require("path")
 var SERVER_SECRET = process.env.SECRET || "1234";
 var jwt = require('jsonwebtoken')
 var app = express()
 var authRoutes = require('./routes/auth')
-var adminRoutes = require('./routes/adminRoutes')
+const fs = require('fs')
+const admin = require("firebase-admin");
+const multer = require('multer')
+
+const storage = multer.diskStorage({ // https://www.npmjs.com/package/multer#diskstorage
+    destination: './uploads/',
+    filename: function (req, file, cb) {
+        cb(null, `${new Date().getTime()}-${file.filename}.${file.mimetype.split("/")[1]}`)
+    }
+})
+
+var upload = multer({ storage: storage })
+
+var SERVICE_ACCOUNT =
+
+admin.initializeApp({
+    credential: admin.credential.cert(SERVICE_ACCOUNT),
+    databaseURL: ""
+});
+const bucket = admin.storage().bucket("");
 
 app.use(bodyParser.json());
 app.use(cookieParser());
@@ -23,11 +42,10 @@ app.use(morgan('dev'));
 
 app.get('/', (req, res, next) => {
     res.send("running")
-    
+
 })
 
 app.use('/', authRoutes);
-app.use('/', adminRoutes);
 app.use(function (req, res, next) {
     console.log(req.cookies.jToken)
     if (!req.cookies.jToken) {
@@ -48,7 +66,7 @@ app.use(function (req, res, next) {
                     id: decodedData.id,
                     name: decodedData.name,
                     email: decodedData.email,
-                    
+                    role: decodedData.role
                 }, SERVER_SECRET)
                 res.cookie('jToken', token, {
                     maxAge: 86400000,
@@ -64,33 +82,13 @@ app.use(function (req, res, next) {
     });
 })
 
-app.get("/adminProfile", (req, res, next) => {
-
-    console.log(req.body)
-
-    foodUserModel.findById(req.body.jToken.id, 'name email createdOn',
-        function (err, doc) {
-            console.log( "doc",doc)
-            if (!err) {
-                res.send({
-                    status: 200,
-                    profile: doc
-                })
-
-            } else {
-                res.status(500).send({
-                    message: "server error"
-                })
-            }
-        })
-})
 app.get("/profile", (req, res, next) => {
 
     console.log(req.body)
 
-    foodUserModel.findById(req.body.jToken.id, 'name email phone createdOn',
+    foodUserModel.findById(req.body.jToken.id, 'name email phone role createdOn',
         function (err, doc) {
-            console.log( "doc",doc)
+            console.log("doc", doc)
             if (!err) {
                 res.send({
                     status: 200,
@@ -104,9 +102,63 @@ app.get("/profile", (req, res, next) => {
             }
         })
 })
+app.post("/addProduct", upload.any(), (req, res, next) => {
 
-app.post("/order",(req,res,next)=>{
-    console.log("fsfsf",req.body)
+    console.log("req.body: ", req.body);
+    bucket.upload(
+        req.files[0].path,
+        function (err, file, apiResponse) {
+            if (!err) {
+                file.getSignedUrl({
+                    action: 'read',
+                    expires: '03-09-2491'
+                }).then((urlData, err) => {
+                    if (!err) {
+                        console.log("public downloadable url: ", urlData[0])
+                        foodUserModel.findById(req.headers.jToken.id, 'email role', (err,user)=>{
+                            console.log("user =======>", user.email)
+                            if (!err) {
+                                foodProductModel.create({
+                                    "productName": req.body.productName,
+                                    "price": req.body.price,
+                                   "stock": req.body.stock,
+                                   "productImage": urlData[0],
+                                   "description": req.body.description
+                                }).then((data) => {
+                                    console.log(data)
+                                    res.send({
+                                        status: 200,
+                                        message: "Product add successfully",
+                                        data: data
+                                    })
+
+                                }).catch(() => {
+                                    console.log(err);
+                                    res.status(500).send({
+                                        message: "user create error, " + err
+                                    })
+                                })
+                            }
+                            else{
+                                res.send("err")
+                            }
+                        })
+                        try {
+                            fs.unlinkSync(req.files[0].path)
+                        } catch (err) {
+                            console.error(err)
+                        }
+                    }
+                })
+            } else {
+                console.log("err: ", err)
+                res.status(500).send();
+            }
+        });
+})
+
+app.post("/order", (req, res, next) => {
+    console.log("fsfsf", req.body)
     if (!req.body.orders || !req.body.total) {
 
         res.status(403).send(`
@@ -119,41 +171,41 @@ app.post("/order",(req,res,next)=>{
         return;
     }
 
-    foodUserModel.findOne({email: req.body.jToken.email} ,(err,user)=>{
+    foodUserModel.findOne({ email: req.body.jToken.email }, (err, user) => {
+        console.log("afafa", user)
         if (!err) {
             foodOrderModel.create({
-                name: user.name,
-                email:user.email,
-                phone:user.phone,
-                address:user.address,
+                name: req.body.name,
+                phone: req.body.phone,
+                address: req.body.address,
                 total: req.body.total,
-                orders:req.body.orders
-            }).then((data)=>{
+                orders: req.body.orders
+            }).then((data) => {
                 res.send({
                     status: 200,
                     message: "Order have been submitted",
                     data: data
                 })
-            }).catch(()=>{
+            }).catch(() => {
                 res.status(500).send({
                     message: "order submit error, " + err
                 })
             })
         }
-        else{
+        else {
             console.log(err)
         }
     })
 })
 
-app.get('/getOrders',(req,res,next)=>{
-    foodOrderModel.find({},(err,data)=>{
+app.get('/getOrders', (req, res, next) => {
+    foodOrderModel.find({}, (err, data) => {
         if (!err) {
             res.send({
-                data:data
+                data: data
             })
         }
-        else{
+        else {
             res.send(err)
         }
     })

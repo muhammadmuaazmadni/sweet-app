@@ -7,36 +7,32 @@ export const useGlobalState = () => useContext(GlobalStateContext)
 export const useGlobalStateUpdate = () => useContext(GlobalStateUpdateContext)
 
 export function GlobalStateProvider({ children }) {
-  var ourRoll = localStorage.getItem('roll');
-  console.log('local storage roll', ourRoll);
   const [data, setData] = useState({
     user: null,
     loginStatus: false,
-    token: null,
-    roll: null
+    role: null,
+    cartData: null
   })
-  console.log(data)
 
   useEffect(() => {
-    console.log('inside global roll', data.roll);
     axios({
       method: "get",
-      url: ourRoll === 'user' ? `http://localhost:5000/profile` : 'http://localhost:5000/adminProfile',
+      url: `http://localhost:5000/profile`,
       withCredentials: true
     })
       .then((res) => {
         console.log("context response", res);
         if (res.data.status === 200) {
+          console.log(res)
           setData((prev) => ({
             ...prev,
             user: res.data.profile,
             loginStatus: true,
-            roll: ourRoll === 'user' ? 'user' : 'admin'
+            role: res.data.profile.role
           }));
         }
       })
       .catch((err) => {
-        console.log(err);
         if (err) {
           setData((prev) => ({ ...prev, loginStatus: false }));
         }
@@ -44,7 +40,7 @@ export function GlobalStateProvider({ children }) {
     return () => {
       console.log("cleanup");
     };
-  }, [data.roll]);
+  }, []);
 
   return (
     <GlobalStateContext.Provider value={data}>

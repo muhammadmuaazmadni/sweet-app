@@ -1,34 +1,23 @@
 import React, { useState } from 'react';
 import '../Dashboard.css'
 import axios from 'axios'
+import {useHistory} from 'react-router-dom'
+import { useGlobalState, useGlobalStateUpdate } from '../../../context/globalContext'
 export default function Basket(props) {
-  const [msg, setMsg] = useState('')
+  const globalState = useGlobalState()
+  const globalStateUpdate = useGlobalStateUpdate()  
   const { cartItems, onAdd, onRemove } = props;
   const itemsPrice = cartItems.reduce((a, c) => a + c.qty * c.price, 0);
-  console.log(cartItems)
-  console.log(itemsPrice)
   const totalPrice = itemsPrice;
-
-  function placeOrder() {
-    axios({
-      method: 'post',
-      url: "http://localhost:5000/order",
-      data: {
-        total: totalPrice,
-        orders: cartItems
-      },
-      withCredentials: true
-    }).then((response) => {
-      if (response.data.status === 200) {
-        console.log(response.data.message)
-        setMsg(response.data.message)
-      }
-      else {
-        console.log(response.data.message)
-      }
-    }).catch((err) => {
-      console.log(err)
-    })
+  const history =useHistory()
+  
+  
+  function checkOut(){
+    globalStateUpdate(prev=>({
+      ...prev,
+      cartData: {cartItems:cartItems,totalPrice:totalPrice}
+    }))
+    history.push('/checkoutform')
   }
   return (
     <aside className="container ">
@@ -68,15 +57,12 @@ export default function Basket(props) {
               <hr />
               <div className="row1">
                 <button
-                  className="btn btn-primary" onClick={placeOrder}>
+                  className="btn btn-primary" onClick={checkOut}>
                   Checkout
-              </button><br/>
+              </button><br />
               </div>
             </>
           )}
-          {msg ? <div class="alert alert-success mt-3" role="alert">
-            {msg}
-          </div>: null}
         </div>
       </div>
     </aside>

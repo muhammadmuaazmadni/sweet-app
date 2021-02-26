@@ -1,5 +1,5 @@
-const data = {
-    products: [
+let products;
+export default products = [
       {
         id: '1',
         name: 'Gulab Jamun',
@@ -18,6 +18,5 @@ const data = {
         price: 900,
         image: 'https://i.ytimg.com/vi/YkD74gaIQmc/maxresdefault.jpg',
       },
-    ],
-  };
-  export default data;
+    ]
+ 

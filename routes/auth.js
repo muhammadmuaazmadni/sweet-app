@@ -88,16 +88,16 @@ router.post("/login", (req, res, next) => {
                     message: "an error occured: " + JSON.stringify(err)
                 });
             } else if (user) {
-                req.body.userData = user
                 bcrypt.varifyHash(req.body.password, user.password).then(isMatched => {
                     if (isMatched) {
-                        console.log("matched");
+                        console.log("matched", user );
 
                         var token =
                             jwt.sign({
                                 id: user._id,
                                 name: user.name,
                                 email: user.email,
+                                role: user.role
                             }, SERVER_SECRET)
 
                         res.cookie('jToken', token, {
@@ -113,6 +113,7 @@ router.post("/login", (req, res, next) => {
                                 email: user.email,
                                 phone: user.phone,
                                 gender: user.gender,
+                                role: user.role
                             }
                         });
                         

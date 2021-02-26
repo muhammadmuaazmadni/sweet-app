@@ -5,8 +5,11 @@ import Login from './../login/Login.jsx'
 import Signup from './../signup/Signup.jsx'
 import Dashboard from './../dashboard/Dashboard.jsx'
 import ForgetPw from './../forgetPw/ForgetPassS1'
-import Admin from '../admin/admin'
 import AdminDashboard from '../admin/adminDashboard'
+import Basket from '../dashboard/cart/Basket'
+import CheckOutForm from '../dashboard/cart/CheckOutForm'
+import AddProducts from '../admin/AddProducts'
+
 import { useGlobalState } from '../../context/globalContext'
 function RoutesConfig() {
     const globalState = useGlobalState()
@@ -14,13 +17,11 @@ function RoutesConfig() {
     return (
         <div>
             <Router>
-                {console.log('roll inside router=> ',globalState.roll)}
-                {globalState.loginStatus === false ?
+                {globalState.role === null ?
                     <div>
                         <Switch>
                             <Route exact path="/" component={Signup} />
                             <Route path="/login" component={Login} />
-                            <Route path="/admin" component={Admin} />
                             <Route path="/forgetpw" component={ForgetPw} />
                             <Route path="*" />
                             <Redirect to="/" />
@@ -28,18 +29,21 @@ function RoutesConfig() {
                         </Switch>
                     </div> : null}
 
-                {globalState.roll === "user" && globalState.loginStatus === true ?
+                {globalState.role === "user" ?
                     <>
                         <Route exact path="/" component={Dashboard} />
+                        <Route path="/basket" component={Basket} />
                         <Route path="/home" component={Home} />
+                        <Route path="/checkoutform" component={CheckOutForm} />
                         <Route path="*" />
                         <Redirect to="/" />
                         <Route />
                     </> : null
                 }
-                {globalState.roll === "admin" && globalState.loginStatus === true ?
+                {globalState.role === "admin" ?
                     <>
                         <Route exact path="/" component={AdminDashboard} />
+                        <Route exact path="/addproducts" component={AddProducts} />
                         <Route path="*" />
                         <Redirect to="/" />
                         <Route />

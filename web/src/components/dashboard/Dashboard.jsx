@@ -1,19 +1,18 @@
 import React, { useState } from "react";
-import Main from './cart/Main';
 import Basket from './cart/Basket';
-import data from './data';
+import products from './data';
 import Navbar from '../Navbar/Navbar'
 import axios from 'axios'
-import {useHistory} from "react-router-dom"
-import { useGlobalState,useGlobalStateUpdate} from '../../context/globalContext'
+import { useHistory } from "react-router-dom"
+import { useGlobalState, useGlobalStateUpdate } from '../../context/globalContext'
 
-function Dashboard() {    
+function Dashboard() {
     const globalState = useGlobalState()
     const globalStateUpdate = useGlobalStateUpdate()
     let history = useHistory()
-    const { products } = data;
+    const [hideCart,setHideCart] = useState(true)
     const [cartItems, setCartItems] = useState([]);
- 
+    
     ///////////////////////////////
     const onAdd = (product) => {
         const exist = cartItems.find((x) => x.id === product.id);
@@ -23,6 +22,7 @@ function Dashboard() {
                     x.id === product.id ? { ...exist, qty: exist.qty + 1 } : x
                 )
             );
+
         } else {
             setCartItems([...cartItems, { ...product, qty: 1 }]);
         }
@@ -50,9 +50,10 @@ function Dashboard() {
             withCredentials: true
         }).then((response) => {
             console.log(response)
-            globalStateUpdate(prev =>({
+            globalStateUpdate(prev => ({
                 ...prev,
-                loginStatus:false
+                loginStatus: false,
+                role: null
             }))
             history.push("/login")
         }, (error) => {
@@ -61,19 +62,33 @@ function Dashboard() {
     }
     return (
         <div>
-            <Navbar logout={logout}/>
+            <Navbar logout={logout} setCart={setHideCart} cartItemsLength={cartItems.length} />
             <div className='bg-primary py-2'>
                 <div className="container">
-                    <h2 className="mr-4 text-white">Welcome </h2>
+                    <h2 className="mr-4 text-white">Welcome {globalState.user.name} </h2>
                 </div>
             </div>
             <div className="row1">
-                <Main products={products} onAdd={onAdd}></Main>
-                <Basket
-                    cartItems={cartItems}
-                    onAdd={onAdd}
-                    onRemove={onRemove}
-                ></Basket>
+            {hideCart ===true ?
+                <main className="container">
+                    <h1 className="text-center ">Products</h1>
+                    <div className="row">
+                        {products.map((product) => (
+                            <div className="col-md-4" key={product.id}>
+                                <div>
+                                    <img className="w-100" height="200" src={product.image} alt={product.name} />
+                                    <h3>{product.name}</h3>
+                                    <div>{product.price}Pkr</div>
+                                    <div>
+                                        <button onClick={() => onAdd(product)} className="btn btn-primary">Add To Cart</button>
+                                    </div>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </main>:
+                <>
+                <Basket cartItems={cartItems} onAdd={onAdd} onRemove={onRemove}/></>}
             </div>
         </div>
     )

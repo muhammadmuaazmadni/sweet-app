@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import axios from "axios";
 import './Login.css'
-import {useGlobalState,useGlobalStateUpdate} from '../../context/globalContext'
+import { useGlobalState, useGlobalStateUpdate } from '../../context/globalContext'
 import {
     useHistory
 } from "react-router-dom";
@@ -23,14 +23,14 @@ function Login() {
             },
             withCredentials: true
         }).then((response) => {
+            console.log(response.data.role)
             if (response.data.status === 200) {
-                setGlobalState(prev =>({
+                setGlobalState(prev => ({
                     ...prev,
                     loginStatus: true,
                     user: response.data.user,
-                    roll: 'user'
+                    role: response.data.user.role,
                 }))
-                localStorage.setItem('roll','user');
             }
             else {
                 history.push("/login");
@@ -40,7 +40,7 @@ function Login() {
             console.log(error);
         });
     }
-    function goToForget(){
+    function goToForget() {
         history.push("/forgetpw");
     }
     return (
@@ -62,11 +62,11 @@ function Login() {
                                 <div className="col">
                                     <button className='btn btn-primary' type="submit">Login</button>
                                     <p className='mt-3' onClick={goToForget}
-                                    style={{cursor: "pointer"}}>Forget Password</p>
-                                </div><br/>
-                                {show?<div className="alert alert-danger" role="alert">
+                                        style={{ cursor: "pointer" }}>Forget Password</p>
+                                </div><br />
+                                {show ? <div className="alert alert-danger" role="alert">
                                     {show}
-                                </div>: null}
+                                </div> : null}
                             </div>
                         </form>
                     </div>

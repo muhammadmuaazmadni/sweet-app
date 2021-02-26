@@ -16,7 +16,8 @@ function AdminDashboard() {
             console.log(response)
             globalStateUpdate(prev => ({
                 ...prev,
-                loginStatus: false
+                loginStatus: false,
+                role: null
             }))
             history.push("/login")
 
