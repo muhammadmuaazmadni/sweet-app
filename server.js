@@ -9,26 +9,26 @@ var SERVER_SECRET = process.env.SECRET || "1234";
 var jwt = require('jsonwebtoken')
 var app = express()
 var authRoutes = require('./routes/auth')
-const fs = require('fs')
-const admin = require("firebase-admin");
-const multer = require('multer')
+// const fs = require('fs')
+// const admin = require("firebase-admin");
+// const multer = require('multer')
 
-const storage = multer.diskStorage({ // https://www.npmjs.com/package/multer#diskstorage
-    destination: './uploads/',
-    filename: function (req, file, cb) {
-        cb(null, `${new Date().getTime()}-${file.filename}.${file.mimetype.split("/")[1]}`)
-    }
-})
+// const storage = multer.diskStorage({ // https://www.npmjs.com/package/multer#diskstorage
+//     destination: './uploads/',
+//     filename: function (req, file, cb) {
+//         cb(null, `${new Date().getTime()}-${file.filename}.${file.mimetype.split("/")[1]}`)
+//     }
+// })
 
-var upload = multer({ storage: storage })
+// var upload = multer({ storage: storage })
 
-var SERVICE_ACCOUNT =
+// var SERVICE_ACCOUNT =
 
-admin.initializeApp({
-    credential: admin.credential.cert(SERVICE_ACCOUNT),
-    databaseURL: ""
-});
-const bucket = admin.storage().bucket("");
+// admin.initializeApp({
+//     credential: admin.credential.cert(SERVICE_ACCOUNT),
+//     databaseURL: ""
+// });
+// const bucket = admin.storage().bucket("");
 
 app.use(bodyParser.json());
 app.use(cookieParser());
@@ -102,60 +102,60 @@ app.get("/profile", (req, res, next) => {
             }
         })
 })
-app.post("/addProduct", upload.any(), (req, res, next) => {
+// app.post("/addProduct", upload.any(), (req, res, next) => {
 
-    console.log("req.body: ", req.body);
-    bucket.upload(
-        req.files[0].path,
-        function (err, file, apiResponse) {
-            if (!err) {
-                file.getSignedUrl({
-                    action: 'read',
-                    expires: '03-09-2491'
-                }).then((urlData, err) => {
-                    if (!err) {
-                        console.log("public downloadable url: ", urlData[0])
-                        foodUserModel.findById(req.headers.jToken.id, 'email role', (err,user)=>{
-                            console.log("user =======>", user.email)
-                            if (!err) {
-                                foodProductModel.create({
-                                    "productName": req.body.productName,
-                                    "price": req.body.price,
-                                   "stock": req.body.stock,
-                                   "productImage": urlData[0],
-                                   "description": req.body.description
-                                }).then((data) => {
-                                    console.log(data)
-                                    res.send({
-                                        status: 200,
-                                        message: "Product add successfully",
-                                        data: data
-                                    })
+//     console.log("req.body: ", req.body);
+//     bucket.upload(
+//         req.files[0].path,
+//         function (err, file, apiResponse) {
+//             if (!err) {
+//                 file.getSignedUrl({
+//                     action: 'read',
+//                     expires: '03-09-2491'
+//                 }).then((urlData, err) => {
+//                     if (!err) {
+//                         console.log("public downloadable url: ", urlData[0])
+//                         foodUserModel.findById(req.headers.jToken.id, 'email role', (err,user)=>{
+//                             console.log("user =======>", user.email)
+//                             if (!err) {
+//                                 foodProductModel.create({
+//                                     "productName": req.body.productName,
+//                                     "price": req.body.price,
+//                                    "stock": req.body.stock,
+//                                    "productImage": urlData[0],
+//                                    "description": req.body.description
+//                                 }).then((data) => {
+//                                     console.log(data)
+//                                     res.send({
+//                                         status: 200,
+//                                         message: "Product add successfully",
+//                                         data: data
+//                                     })
 
-                                }).catch(() => {
-                                    console.log(err);
-                                    res.status(500).send({
-                                        message: "user create error, " + err
-                                    })
-                                })
-                            }
-                            else{
-                                res.send("err")
-                            }
-                        })
-                        try {
-                            fs.unlinkSync(req.files[0].path)
-                        } catch (err) {
-                            console.error(err)
-                        }
-                    }
-                })
-            } else {
-                console.log("err: ", err)
-                res.status(500).send();
-            }
-        });
-})
+//                                 }).catch(() => {
+//                                     console.log(err);
+//                                     res.status(500).send({
+//                                         message: "user create error, " + err
+//                                     })
+//                                 })
+//                             }
+//                             else{
+//                                 res.send("err")
+//                             }
+//                         })
+//                         try {
+//                             fs.unlinkSync(req.files[0].path)
+//                         } catch (err) {
+//                             console.error(err)
+//                         }
+//                     }
+//                 })
+//             } else {
+//                 console.log("err: ", err)
+//                 res.status(500).send();
+//             }
+//         });
+// })
 
 app.post("/order", (req, res, next) => {
     console.log("fsfsf", req.body)

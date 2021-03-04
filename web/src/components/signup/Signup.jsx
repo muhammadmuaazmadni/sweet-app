@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import axios from "axios";
+import './Signup.css'
+
 import {
     useHistory
 } from "react-router-dom";
@@ -76,7 +78,7 @@ function Signup() {
                                         </div><br />
                                         <div className="col">
                                             <button className='btn btn-primary'>Signup</button>
-                                        </div><br/>
+                                        </div><br />
                                         <div className="col">
                                             <p>Already have an account?
                                             <span onClick={handleClick}
@@ -95,9 +97,9 @@ function Signup() {
                                         Login
                                     </span>
                                 </div>}
-                                {show?<div class="alert alert-danger" role="alert">
-                                    {show}
-                                </div>: null}
+                            {show ? <div class="alert alert-danger" role="alert">
+                                {show}
+                            </div> : null}
                         </div>
                     </div>
                 </div>
